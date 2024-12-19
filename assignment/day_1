@@ -1,0 +1,66 @@
+1)wap on sum of natural number upto n.
+
+#include<iostream>
+using namespace std;
+int main(){
+    int n;
+    cout<<"enter value of n"<<endl;
+    cin>>n;
+    int sum;
+    sum = (n*(n+1))/2;
+    cout<<sum<<endl;
+    return 0;
+}
+2)WAP to check wether a number is prime or not.
+
+#include <iostream>
+using namespace std;
+
+bool isPrime(int n) {
+    if (n <= 1)
+        return false; 
+    for (int i = 2; i * i <= n; i++) {
+        if (n % i == 0)
+            return false; 
+    }
+    return true; 
+}
+
+int main() {
+    int num;
+    cout << "Enter a number: ";
+    cin >> num;
+
+    if (isPrime(num))
+        cout << num << " is a prime number." << endl;
+    else
+        cout << num << " is not a prime number." << endl;
+
+    return 0;
+}
+
+3)print your whole academic biodata : name,UID,section,area of interest,age,last year sgpa,DOB,hometown, aim in life.
+
+#include<iostream>
+using namespace std;
+int main(){
+    string name="Raja Kumar";
+    string UID="22BCS50110";
+    string section="22BCS_IOT-630";
+    string AOI="mera mann";
+    int age= 21;
+    int sgpa= 7.45;
+    string DOB="15 aug 2003";
+    string hometown="samastipur";
+    string ail="mera mann";
+    cout<<name<<endl;
+    cout<<UID<<endl;
+    cout<<section<<endl;
+    cout<<AOI<<endl;
+    cout<<age<<endl;
+    cout<<sgpa<<endl;
+    cout<<DOB<<endl;
+    cout<<hometown<<endl;
+    cout<<ail<<endl;
+    return 0;
+}
