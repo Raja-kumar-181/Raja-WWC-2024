@@ -1,0 +1,26 @@
+
+1)print your whole academic biodata : name,UID,section,area of interest,age,last year sgpa,DOB,hometown, aim in life.
+
+#include<iostream>
+using namespace std;
+int main(){
+    string name="Raja Kumar";
+    string UID="22BCS50110";
+    string section="22BCS_IOT-630";
+    string AOI="mera mann";
+    int age= 21;
+    int sgpa= 7.45;
+    string DOB="15 aug 2003";
+    string hometown="samastipur";
+    string ail="mera mann";
+    cout<<name<<endl;
+    cout<<UID<<endl;
+    cout<<section<<endl;
+    cout<<AOI<<endl;
+    cout<<age<<endl;
+    cout<<sgpa<<endl;
+    cout<<DOB<<endl;
+    cout<<hometown<<endl;
+    cout<<ail<<endl;
+    return 0;
+}
