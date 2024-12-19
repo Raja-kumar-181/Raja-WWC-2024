@@ -1,0 +1,11 @@
+3) WAP to calculate sum of first n natural number.
+#include<iostream>
+using namespace std;
+int main(){
+int p, n;
+cout<<"enter value of n"<<endl;
+cin>>n;
+p=(n*(n+1)/2);
+cout<<"sum of "<<n <<"natural number is"<<p<<endl;
+return 0;
+}
