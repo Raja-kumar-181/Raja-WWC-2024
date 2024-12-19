@@ -1,0 +1,13 @@
+1)wap on sum of natural number upto n
+#include<iostream>
+using namespace std;
+int main(){
+    int n;
+    cout<<"enter value of n"<<endl;
+    cin>>n;
+    int sum;
+    sum = (n*(n+1))/2;
+    cout<<sum<<endl;
+    return 0;
+}
+2)WAP to check wether a number is prime or not
