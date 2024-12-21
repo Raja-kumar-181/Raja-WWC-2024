@@ -1,0 +1,170 @@
+ Design a system in C++ that uses a linked list to simulate a real-time task scheduler for a multi-threaded operating system.
+ Each node in the linked list represents a task, containing attributes like a unique task ID, task priority, estimated execution
+ time, and a pointer to the next task. The linked list must dynamically adapt to new tasks being added, tasks completing, or 
+ tasks being pre-empted based on their priority. Implement functionality to insert tasks into the list in priority order
+ (higher priority tasks come first), remove tasks upon completion, and dynamically reallocate execution slots if a higher 
+ priority task is added mid-execution. Additionally, the system should support a circular linked list to handle periodic tasks
+ that need to re-enter the scheduling queue after a defined time interval. The implementation must ensure efficient memory usage 
+ and handle edge cases, such as managing tasks with the same priority, handling an empty task queue, and dealing with corrupted 
+ nodes. The program should output the current state of the task list, showing the order of execution and periodically updating 
+ it as tasks are added, completed, or preempted in real-time. This problem challenges your understanding of advanced linked 
+ list manipulation, dynamic memory management, and multi-threaded system simulation.
+
+ #include <iostream>
+#include <string>
+using namespace std;
+
+// Task structure
+struct Task {
+    int taskID;
+    int priority;
+    int execTime;
+    int periodicInterval; // For periodic tasks (set to 0 for one-time tasks)
+    Task* next;
+};
+
+// TaskScheduler class
+class TaskScheduler {
+private:
+    Task* head;
+
+public:
+    TaskScheduler() : head(nullptr) {}
+
+    // Insert a new task in priority order
+    void addTask(int taskID, int priority, int execTime, int periodicInterval = 0) {
+        Task* newTask = new Task{taskID, priority, execTime, periodicInterval, nullptr};
+        
+        if (!head) { // Empty list case
+            head = newTask;
+            newTask->next = head;
+            return;
+        }
+
+        Task* current = head;
+        Task* prev = nullptr;
+
+        // Find the correct position based on priority
+        do {
+            if (current->priority < priority) break;
+            prev = current;
+            current = current->next;
+        } while (current != head);
+
+        if (!prev) { // Insert at head
+            newTask->next = head;
+            Task* tail = head;
+            while (tail->next != head) tail = tail->next;
+            tail->next = newTask;
+            head = newTask;
+        } else { // Insert elsewhere
+            prev->next = newTask;
+            newTask->next = current;
+        }
+    }
+
+    // Execute the next task
+    void executeTask() {
+        if (!head) {
+            cout << "No tasks to execute!\n";
+            return;
+        }
+
+        Task* task = head;
+        cout << "Executing Task ID: " << task->taskID
+             << ", Priority: " << task->priority
+             << ", Execution Time: " << task->execTime << "ms\n";
+
+        // Reduce execution time or remove task
+        task->execTime -= 1;
+        if (task->execTime <= 0) {
+            if (task->periodicInterval > 0) { // Periodic task
+                task->execTime = task->periodicInterval;
+                head = head->next;
+            } else { // One-time task
+                removeTask(task->taskID);
+            }
+        } else {
+            head = head->next;
+        }
+    }
+
+    // Remove a task by ID
+    void removeTask(int taskID) {
+        if (!head) {
+            cout << "Task queue is empty!\n";
+            return;
+        }
+
+        Task* current = head;
+        Task* prev = nullptr;
+
+        do {
+            if (current->taskID == taskID) {
+                if (current == head) {
+                    if (head->next == head) { // Only one task
+                        delete head;
+                        head = nullptr;
+                    } else { // Multiple tasks
+                        Task* tail = head;
+                        while (tail->next != head) tail = tail->next;
+                        head = head->next;
+                        tail->next = head;
+                        delete current;
+                    }
+                } else {
+                    prev->next = current->next;
+                    delete current;
+                }
+                cout << "Task ID " << taskID << " removed.\n";
+                return;
+            }
+            prev = current;
+            current = current->next;
+        } while (current != head);
+
+        cout << "Task ID " << taskID << " not found.\n";
+    }
+
+    // Display the current task queue
+    void displayTasks() {
+        if (!head) {
+            cout << "Task queue is empty!\n";
+            return;
+        }
+
+        Task* temp = head;
+        cout << "Task Queue:\n";
+        do {
+            cout << "ID: " << temp->taskID << ", Priority: " << temp->priority
+                 << ", Execution Time: " << temp->execTime
+                 << ", Periodic Interval: " << temp->periodicInterval << "\n";
+            temp = temp->next;
+        } while (temp != head);
+    }
+
+    // Destructor to free memory
+    ~TaskScheduler() {
+        while (head) {
+            removeTask(head->taskID);
+        }
+    }
+};
+
+int main() {
+    TaskScheduler scheduler;
+
+    scheduler.addTask(1, 10, 5);
+    scheduler.addTask(2, 20, 3);
+    scheduler.addTask(3, 15, 7, 5); // Periodic task
+
+    scheduler.displayTasks();
+
+    cout << "\nSimulating Task Execution:\n";
+    for (int i = 0; i < 10; ++i) {
+        scheduler.executeTask();
+        scheduler.displayTasks();
+    }
+
+    return 0;
+}
