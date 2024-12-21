@@ -1,0 +1,160 @@
+ Design a train reservation system in C++ using linked lists to manage bookings for multiple trains, each with several 
+ compartments. Each compartment has a fixed number of seats, and passengers can book, cancel, or check the availability of
+ seats for specific compartments. Additionally, the system should dynamically allocate memory for new bookings and keep track
+ of canceled seats efficiently
+
+ #include <iostream>
+#include <string>
+using namespace std;
+
+// Seat structure
+struct Seat {
+    bool isBooked;
+    Seat* next;
+};
+
+// Compartment structure
+struct Compartment {
+    string compartmentName;
+    int seatCount;
+    Seat* seats;
+    Compartment* next;
+};
+
+// Train structure
+struct Train {
+    string trainName;
+    Compartment* compartments;
+    Train* next;
+};
+
+// ReservationSystem class
+class ReservationSystem {
+private:
+    Train* trains;
+
+public:
+    ReservationSystem() : trains(nullptr) {}
+
+    // Add a new train
+    void addTrain(const string& trainName) {
+        Train* newTrain = new Train{trainName, nullptr, trains};
+        trains = newTrain;
+    }
+
+    // Add a compartment to a train
+    void addCompartment(const string& trainName, const string& compName, int seatCount) {
+        Train* train = findTrain(trainName);
+        if (!train) {
+            cout << "Train not found!\n";
+            return;
+        }
+
+        Compartment* newComp = new Compartment{compName, seatCount, nullptr, train->compartments};
+        train->compartments = newComp;
+
+        // Initialize seats
+        Seat* prev = nullptr;
+        for (int i = 0; i < seatCount; ++i) {
+            Seat* newSeat = new Seat{false, nullptr};
+            if (!newComp->seats) {
+                newComp->seats = newSeat;
+            } else {
+                prev->next = newSeat;
+            }
+            prev = newSeat;
+        }
+    }
+
+    // Book a seat in a compartment
+    bool bookSeat(const string& trainName, const string& compName) {
+        Compartment* comp = findCompartment(trainName, compName);
+        if (!comp) {
+            cout << "Compartment not found!\n";
+            return false;
+        }
+
+        Seat* seat = comp->seats;
+        while (seat) {
+            if (!seat->isBooked) {
+                seat->isBooked = true;
+                cout << "Seat booked in " << compName << " of " << trainName << ".\n";
+                return true;
+            }
+            seat = seat->next;
+        }
+
+        cout << "No available seats in " << compName << " of " << trainName << ".\n";
+        return false;
+    }
+
+    // Cancel a seat in a compartment
+    bool cancelSeat(const string& trainName, const string& compName) {
+        Compartment* comp = findCompartment(trainName, compName);
+        if (!comp) {
+            cout << "Compartment not found!\n";
+            return false;
+        }
+
+        Seat* seat = comp->seats;
+        while (seat) {
+            if (seat->isBooked) {
+                seat->isBooked = false;
+                cout << "Seat canceled in " << compName << " of " << trainName << ".\n";
+                return true;
+            }
+            seat = seat->next;
+        }
+
+        cout << "No booked seats to cancel in " << compName << " of " << trainName << ".\n";
+        return false;
+    }
+
+    // Check seat availability
+    void checkAvailability(const string& trainName, const string& compName) {
+        Compartment* comp = findCompartment(trainName, compName);
+        if (!comp) {
+            cout << "Compartment not found!\n";
+            return;
+        }
+
+        int available = 0;
+        Seat* seat = comp->seats;
+        while (seat) {
+            if (!seat->isBooked) ++available;
+            seat = seat->next;
+        }
+
+        cout << "Available seats in " << compName << " of " << trainName << ": " << available << "\n";
+    }
+
+private:
+    // Find a train by name
+    Train* findTrain(const string& trainName) {
+        Train* train = trains;
+        while (train) {
+            if (train->trainName == trainName) return train;
+            train = train->next;
+        }
+        return nullptr;
+    }
+
+    // Find a compartment by name
+    Compartment* findCompartment(const string& trainName, const string& compName) {
+        Train* train = findTrain(trainName);
+        if (!train) return nullptr;
+
+        Compartment* comp = train->compartments;
+        while (comp) {
+            if (comp->compartmentName == compName) return comp;
+            comp = comp->next;
+        }
+        return nullptr;
+    }
+};
+
+int main() {
+    ReservationSystem system;
+
+    system.addTrain("Express 1");
+    system.addCompartment("
